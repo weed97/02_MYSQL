@@ -100,7 +100,7 @@ where category_code in (5, 6) -- 일식/ 중식만 조회
 -- 그 결과 다시 메인쿼리로 반환하는 형식으로 수행되는 서브쿼리
 
 -- 서브쿼리의 WHERE 절 수행을 위해, 메인쿼리가 먼저 수행되는구조
--- 메인쿼리 테이블의 행에 다라 서브쿼리의 결과값도 바뀐다.
+-- 메인쿼리 테이블의 행에 따라 서브쿼리의 결과값도 바뀐다.
 
 -- 카테고리 별 평균 가격이 가장 비싼 메뉴 조회
 
@@ -109,10 +109,64 @@ from tbl_menu a -- 이 테이블을
 where menu_price = (select max(menu_price)
                     from tbl_menu
                     where category_code = a.category_code -- 여기에 가져다 쓴다
-)
+);
 
 
+-- EXISTS
+-- 서브쿼리 결과집합에 행이 존재하면 참, 행이 존재하지 않으면 거짓
+-- NOT EXISTS
+-- 서브쿼리 결과집합에 행이 존재하지 않으면 참, 행이 존재하면 거짓
+
+-- tbl_menu에서 사용되는 카테고리만 조회하겠다.
+select a.category_code,
+       a.category_name
+from tbl_category a
+where not exists(select category_code
+                 from tbl_menu b
+                 where b.category_code = a.category_code);
 
 
+-- 스칼라 서브쿼리
+-- 결과값이 1개인 서브쿼리 주로 select 문에서 사용된다.
+-- 스칼라 = 단일값
 
+-- 메뉴명, 카테고리명 조회
+select a.menu_name,
+       b.category_name
+from tbl_menu a
+         left join tbl_category b on a.category_code = b.category_code;
 
+-- 스칼라 서브쿼리
+select a.menu_name,
+       (select category_name
+        from tbl_category b
+        where b.category_code = a.category_code) category_name
+
+from tbl_menu a;
+
+-- 스칼라 서브쿼리의 반환 행수가 1행보다 많을 수는 없다.
+select menu_name,
+       (select category_name
+        from tbl_category) category_name
+from tbl_menu;
+
+/*
+CTE(Common Table Expressions)
+- 서브쿼리랑 비슷한 개념
+- 코드의 가독성과 재사용성을 위해 사용한다.
+- FROM 절에서만 사용이된다. (JOIN 일시 JOIN 구문에서도 가능)
+*/
+
+-- 메뉴명과 카테고리명을 함께 출력
+with menucate as (select menu_name,
+                         category_name
+                  from tbl_menu a
+                           join
+                       tbl_category b on a.category_code = b.category_code)
+
+select
+    *
+from
+    menucate
+order by
+    menu_name;
