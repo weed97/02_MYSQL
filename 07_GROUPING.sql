@@ -102,10 +102,10 @@ with rollup;
 -- 컬럼 두개를 활용한 ROLLUP
 -- 메뉴 가격별 총합 해당메뉴 같은카테고리의 총합
 select menu_price,
-       category_code,
-       count(*)        총개수,
+       category_code 총개수,
        sum(menu_price) 총합
 from tbl_menu
+
 group by menu_price,
          category_code
 with rollup;
