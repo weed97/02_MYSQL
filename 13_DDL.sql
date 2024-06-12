@@ -68,7 +68,7 @@ alter table tb2
 -- [42000][1075] Incorrect table definition;
 -- there can be only one auto column and it must be defined as a key
 alter table tb2
-    drop primary key; -- 프라머리키는한개는 존재해야한다.
+    drop primary key; -- 프라이머키는 한개는 존재해야하므로 지울수 없다
 -- modify 컬럼의 정의를 바꾸는 것
 alter table tb2
     modify pk int;
